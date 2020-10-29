@@ -7,8 +7,23 @@ services:
       target: development
     volumes:
       - ./server:/usr/src/app
-      - /usr/src/app/node_modules
     ports:
       - ${SERVER_PORT}:${SERVER_PORT}
-      - 9229:9229
     command: npm run start:dev
+    depends_on:
+      - mongodb
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    hostname: mongodb
+    ports:
+      - "27017-27019:27017-27019"
+    environment:
+      MONGO_INITDB_DATABASE: oclize
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - mongodb_data_container:/data/db
+
+volumes:
+  mongodb_data_container:
