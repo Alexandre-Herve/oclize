@@ -1,11 +1,18 @@
 # Oclize
 
 ## Structure
-1. client: the angular shared web + ios + android app
-2. server: the nestjs server
+### client
+The angular / nativescript web + ios + android application.
+
+### server
+The nestjs server
 
 ## Development
-Run:
 ```
-docker-compose up
+SERVER_PORT=3000 docker-compose up
+```
+
+## Test
+```
+SERVER_PORT=3000 docker-compose run --rm server yarn test:watchAll
 ```
