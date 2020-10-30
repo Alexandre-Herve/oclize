@@ -12,6 +12,8 @@ services:
     command: npm run start:dev
     depends_on:
       - mongodb
+    env_file:
+      - .env
   mongodb:
     image: mongo:latest
     container_name: mongodb
