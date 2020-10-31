@@ -38,5 +38,5 @@ docker-compose run --rm server yarn test:watchAll
 
 ### E2E
 ```
-docker-compose run --rm server yarn test:e2e --watchAll
+docker-compose run --rm server yarn test:e2e --watchAll --runInBand
 ```
