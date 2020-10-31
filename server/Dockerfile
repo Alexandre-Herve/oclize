@@ -1,6 +1,6 @@
 FROM node:15-alpine As development
 
-WORKDIR /usr/src/app
+WORKDIR /usr/src/app/server
 
 COPY package.json ./
 COPY yarn.lock ./
@@ -10,6 +10,17 @@ RUN yarn
 COPY . .
 
 RUN npm run build
+
+####################
+
+FROM development As test
+
+ENV GIT_WORK_TREE=/usr/src/app/server GIT_DIR=/user/src/app/.git
+
+RUN apk update && \
+    apk add git
+
+####################
 
 FROM node:15-alpine As production
 

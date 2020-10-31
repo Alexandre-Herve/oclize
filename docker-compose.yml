@@ -6,12 +6,26 @@ services:
       context: ./server
       target: development
     volumes:
-      - ./server:/usr/src/app
+      - ./server:/usr/src/app/server
     ports:
       - ${SERVER_PORT}:${SERVER_PORT}
     command: npm run start:dev
     depends_on:
       - mongodb
+
+  server_test:
+    container_name: server_test
+    build:
+      context: ./server
+      target: test
+    volumes:
+      - ./server:/usr/src/app/server
+      - ./.git:/user/src/app/.git
+    depends_on:
+      - mongodb
+    tty: true
+    command: yarn test:e2e --watch --runInBand
+
   mongodb:
     image: mongo:latest
     container_name: mongodb
