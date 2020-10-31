@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppService } from './app.service';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
@@ -30,6 +29,6 @@ const typegooseFactory = async (configService: ConfigService) => {
     UsersModule,
     ConfigModule.forRoot({ isGlobal: true })
   ],
-  providers: [AppService, ConfigService],
+  providers: [ConfigService],
 })
 export class AppModule {}
