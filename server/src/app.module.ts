@@ -15,6 +15,8 @@ const typegooseFactory = async (configService: ConfigService) => {
     uri,
     useUnifiedTopology: true,
     useNewUrlParser: true,
+    useCreateIndex: true,
+    autoIndex: true,
   };
 };
 
