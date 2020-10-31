@@ -31,6 +31,12 @@ db.createUser({ user: "admin", pwd: "password", roles: [ "readWrite" ]})
 ```
 
 ## Test
+### Unit
 ```
 docker-compose run --rm server yarn test:watchAll
+```
+
+### E2E
+```
+docker-compose run --rm server yarn test:e2e --watchAll
 ```
