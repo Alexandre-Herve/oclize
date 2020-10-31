@@ -15,7 +15,6 @@ export class User {
   @prop()
   name?: string;
 
-  // TODO: cipher password
   @prop()
   password?: string;
 }

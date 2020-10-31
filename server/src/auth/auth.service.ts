@@ -3,17 +3,20 @@ import { UsersRepositoryService } from '../users/users-repository.service';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
 import { User } from '../users/model/user';
+import { PasswordHashService } from './auth-password-hash.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersRepository: UsersRepositoryService,
     private jwtService: JwtService,
+    private passwordHashService: PasswordHashService,
   ) {}
 
   async validateUser(email: string, pass: string): Promise<User | null> {
     const user = await this.usersRepository.findByEmail(email);
-    if (user && user.password === pass) {
+    if (!user?.password) return null;
+    if (user && this.passwordHashService.compare(pass, user.password)) {
       const { password, ...result } = user;
       return result;
     }
@@ -30,11 +33,12 @@ export class AuthService {
   async register(registerDto: RegisterDto) {
     const { email, password } = registerDto;
     const existingUser = await this.usersRepository.findByEmail(email);
+    const passwordHash = await this.passwordHashService.hash(password);
     if (existingUser) {
       throw new ForbiddenException(
         'An account is already registered with this email',
       );
     }
-    return await this.usersRepository.create({ email, password });
+    return await this.usersRepository.create({ email, password: passwordHash });
   }
 }

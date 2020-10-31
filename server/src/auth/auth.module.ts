@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt/jwt.strategy';
 import { AuthController } from './auth.controller';
 import { JwtConfigService } from './strategies/jwt/jwt-config.service';
+import { PasswordHashService } from './auth-password-hash.service';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { JwtConfigService } from './strategies/jwt/jwt-config.service';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({ useClass: JwtConfigService }),
   ],
-  providers: [AuthService, JwtStrategy, LocalStrategy],
+  providers: [AuthService, JwtStrategy, LocalStrategy, PasswordHashService],
   exports: [AuthService],
   controllers: [AuthController],
 })
