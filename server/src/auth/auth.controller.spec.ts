@@ -17,7 +17,7 @@ describe('AuthController', () => {
   });
 
   describe('login', async () => {
-    const res = await controller.login({})
-    console.log(res)
+    const res = await controller.login({});
+    console.log(res);
   });
 });
