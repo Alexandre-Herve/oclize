@@ -22,7 +22,7 @@ describe('AppController (e2e)', () => {
     describe('unauthenticated', () => {
       it('should be unauthorized', () => {
         return request(app.getHttpServer())
-          .get('/users/profile')
+          .get('/auth/profile')
           .expect(401)
       })
     })
@@ -45,7 +45,7 @@ describe('AppController (e2e)', () => {
         const token = authenticationRes.body.access_token
 
         return request(app.getHttpServer())
-          .get('/users/profile')
+          .get('/auth/profile')
           .set('Authorization', `Bearer ${token}`)
           .expect(200)
           .expect({ email })

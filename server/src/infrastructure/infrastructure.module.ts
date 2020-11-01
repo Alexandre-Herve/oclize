@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common'
-import { TypegooseConnexionModule } from './typegoose-connexion/typegoose-connexion.module'
+import { MongoDbModule } from './mongodb/mobgodb.module'
 
 @Module({
-  imports: [TypegooseConnexionModule],
+  imports: [MongoDbModule],
 })
 export class InfrastructureModule {}
