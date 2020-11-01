@@ -1,6 +1,6 @@
-import { prop } from '@typegoose/typegoose';
+import { prop } from '@typegoose/typegoose'
 
-const emailRegex = /^(([^<>()\[\]\\.,:\s@"]+(\.[^<>()\[\]\\.,:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+const emailRegex = /^(([^<>()\[\]\\.,:\s@"]+(\.[^<>()\[\]\\.,:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
 export class User {
   @prop({
@@ -10,11 +10,11 @@ export class User {
     // TODO: use class-validator?
     match: emailRegex,
   })
-  email!: string;
+  email!: string
 
   @prop()
-  name?: string;
+  name?: string
 
   @prop()
-  password?: string;
+  password?: string
 }
