@@ -8,9 +8,10 @@ import {
   validateSync,
 } from 'class-validator'
 import { Entity } from '../../../shared/model/entity'
+import { Props } from '../../../shared/model/props'
 import { left, right, Either } from 'fp-ts/lib/Either'
 
-class UserProps {
+class UserProps extends Props {
   @IsEmail()
   @IsNotEmpty()
   email!: string
@@ -19,12 +20,6 @@ class UserProps {
   @IsOptional()
   @MinLength(6)
   password?: string
-
-  static create(params: UserProps) {
-    const props = new UserProps()
-    Object.assign(props, params)
-    return props
-  }
 }
 
 export class User extends Entity<UserProps> {
