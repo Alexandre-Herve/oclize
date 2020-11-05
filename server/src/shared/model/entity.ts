@@ -1,17 +1,11 @@
-import { validate, IsNotEmpty } from 'class-validator'
+export abstract class Entity<T> {
+  constructor(protected readonly _id: string, protected _props: T) {}
 
-export class Entity {
-  @IsNotEmpty()
-  public id: string
-
-  constructor() {
-    this.id = ''
+  get props() {
+    return this._props
   }
 
-  public validate = () => validate(this)
-
-  public isValid = async () => {
-    const errors = await this.validate()
-    return errors.length === 0
+  get id() {
+    return this._id
   }
 }

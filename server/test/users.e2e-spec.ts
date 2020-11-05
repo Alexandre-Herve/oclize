@@ -48,7 +48,7 @@ describe('AppController (e2e)', () => {
           .get('/auth/profile')
           .set('Authorization', `Bearer ${token}`)
           .expect(200)
-          .expect({ email })
+          .expect((res) => res.body.email === email && res.body.id)
       })
     })
   })

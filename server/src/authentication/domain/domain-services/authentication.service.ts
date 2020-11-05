@@ -2,6 +2,7 @@ import { Injectable, Inject } from '@nestjs/common'
 import { UserRepository } from '../ports/user-repository'
 import { PasswordHash } from '../ports/password-hash'
 import { User } from '../model/user'
+import { Option, isNone, none, some } from 'fp-ts/lib/Option'
 
 @Injectable()
 export class AuthenticationService {
@@ -13,13 +14,20 @@ export class AuthenticationService {
   async getUserByCredentials(
     email: string,
     pass: string,
-  ): Promise<User | null> {
-    const user = await this.usersRepository.getByEmail(email)
-    if (!user?.password) return null
-    if (user && this.passwordHashService.compare(pass, user.password)) {
-      const { password, ...result } = user
-      return result
+  ): Promise<Option<User>> {
+    const userOption = await this.usersRepository.getByEmail(email)
+    if (isNone(userOption)) {
+      return none
     }
-    return null
+    const user = userOption.value
+    const password = user.props.password
+    if (!password) {
+      return none
+    }
+    const valid = await this.passwordHashService.compare(pass, password)
+    if (!valid) {
+      return none
+    }
+    return some(user)
   }
 }

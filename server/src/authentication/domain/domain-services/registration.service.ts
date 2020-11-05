@@ -1,7 +1,8 @@
-import { Injectable, Inject, ForbiddenException } from '@nestjs/common'
+import { Injectable, Inject } from '@nestjs/common'
 import { UserRepository } from '../ports/user-repository'
 import { PasswordHash } from '../ports/password-hash'
 import { CreateUserDto } from '../ports/create-user.dto'
+import { Option, isSome, none, some } from 'fp-ts/lib/Option'
 
 @Injectable()
 export class RegistrationService {
@@ -10,22 +11,19 @@ export class RegistrationService {
     @Inject('PASSWORD_HASH') private passwordHashService: PasswordHash,
   ) {}
 
-  async registerUser(createUserDto: CreateUserDto) {
+  async registerUser(createUserDto: CreateUserDto): Promise<Option<string>> {
     const { email, password } = createUserDto
     const existingUser = await this.usersRepository.getByEmail(email)
-    if (existingUser) {
-      // TODO: remove dependency to exception
-      throw new ForbiddenException(
-        'An account is already registered with this email',
-      )
+    if (isSome(existingUser)) {
+      return none
     }
     const passwordHash = password
       ? await this.passwordHashService.hash(password)
       : undefined
-
-    return await this.usersRepository.create({
+    const res = await this.usersRepository.create({
       email,
       password: passwordHash,
     })
+    return some(res)
   }
 }

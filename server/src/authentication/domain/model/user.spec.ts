@@ -1,25 +1,50 @@
 import { User } from './user'
+import { isLeft, isRight } from 'fp-ts/lib/Either'
 
 describe('User', () => {
   const email = 'email@test.com'
   const password = 'password'
+  const id = 'id'
 
   describe('new', () => {
     it('should return a valid user', async () => {
-      const user = new User({ email, password })
-      expect(user.email).toBe(email)
-      expect(user.password).toBe(password)
-
-      const valid = await user.isValid()
-      expect(valid).toBe(true)
+      const userResult = User.create(id, { email, password })
+      if (!isRight(userResult)) {
+        throw new Error('user should have been valid')
+      }
+      const user = userResult.right
+      expect(user.props.email).toBe(email)
+      expect(user.props.password).toBe(password)
+      expect(user.id).toBe(id)
     })
 
-    it('should throw for an invalid email', async () => {
-      const invalidEmail = 'invalid'
-      const user = new User({ email: invalidEmail, password })
+    it('should accept an undefined password', async () => {
+      const userResult = User.create(id, { email })
+      if (!isRight(userResult)) {
+        throw new Error('user should have been valid')
+      }
+      const user = userResult.right
+      expect(user.props.email).toBe(email)
+      expect(user.props.password).toBe(undefined)
+      expect(user.id).toBe(id)
+    })
 
-      const valid = await user.isValid()
-      expect(valid).toBe(false)
+    it('should return errors for an invalid email', async () => {
+      const invalidEmail = 'invalid'
+      const userResult = User.create(id, { email: invalidEmail, password })
+      if (!isLeft(userResult)) {
+        throw new Error('user should not have been valid')
+      }
+      expect(userResult.left.length).toBeGreaterThan(0)
+    })
+
+    it('should return errors for an invalid password', async () => {
+      const invalidPassword = 'ha'
+      const userResult = User.create(id, { email, password: invalidPassword })
+      if (!isLeft(userResult)) {
+        throw new Error('user should not have been valid')
+      }
+      expect(userResult.left.length).toBeGreaterThan(0)
     })
   })
 })

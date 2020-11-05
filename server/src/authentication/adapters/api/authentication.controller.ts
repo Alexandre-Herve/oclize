@@ -1,31 +1,46 @@
-import { Body, Controller, Post, Request, UseGuards, Get } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Post,
+  Request,
+  UseGuards,
+  Get,
+  ForbiddenException,
+} from '@nestjs/common'
 import { LocalAuthGuard } from '../passport/local/local-auth.guard'
 import { JwtAuthGuard } from '../passport/jwt/jwt-auth.guard'
 import { RegistrationService } from '../../domain/domain-services/registration.service'
 import { CreateUserDto } from '../../domain/ports/create-user.dto'
-import { AccessTokenService } from '../../domain/domain-services/access-token.service'
+import { JwtAccessTokenService } from '../passport/jwt/jwt-access-token.service'
+import { JwtReqUser } from '../passport/jwt/jwt-req-user'
+import { isNone } from 'fp-ts/lib/Option'
 
 @Controller('auth')
 export class AuthenticationController {
   constructor(
     private registrationService: RegistrationService,
-    private accessTokenService: AccessTokenService,
+    private jwtAccessTokenService: JwtAccessTokenService,
   ) {}
 
   @Post('register')
-  register(@Body() createUserDto: CreateUserDto) {
-    return this.registrationService.registerUser(createUserDto)
+  async register(@Body() createUserDto: CreateUserDto) {
+    const result = await this.registrationService.registerUser(createUserDto)
+    if (isNone(result)) {
+      const message = 'An account is already registered with this email'
+      throw new ForbiddenException(message)
+    }
+    return result.value
   }
 
   @Post('login')
   @UseGuards(LocalAuthGuard)
   login(@Request() req: any) {
-    return this.accessTokenService.getUserAccessToken(req.user)
+    return this.jwtAccessTokenService.getUserAccessToken(req.user)
   }
 
   @Get('profile')
   @UseGuards(JwtAuthGuard)
-  getProfile(@Request() req: any) {
+  getProfile(@Request() req: any): JwtReqUser {
     return req.user
   }
 }

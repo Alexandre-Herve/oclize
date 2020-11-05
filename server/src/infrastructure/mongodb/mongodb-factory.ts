@@ -16,16 +16,10 @@ export const mongdbFactory = async (
   const uri = getMongoUri(configService)
   const options = { useUnifiedTopology: true }
   const dbname = configService.get<string>('MONGODB_DATABASE', 'oclize')
-
   const client = await MongoClient.connect(uri, options)
-
   const db = client.db(dbname)
-
-  // TODO move in respective module
-  await db.collection('users').createIndex(
-    { email: 1 },
-    { unique: true, sparse: true }
-  );
-
+  await db
+    .collection('users')
+    .createIndex({ email: 1 }, { unique: true, sparse: true })
   return db
 }
