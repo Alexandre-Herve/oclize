@@ -1,11 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { INestApplication } from '@nestjs/common'
-import * as request from 'supertest'
 import { AppModule } from './../src/app.module'
 import { ValidationPipe } from '@nestjs/common'
+import * as request from 'supertest'
+import { CreateSessionDto } from '../src/session/adapters/api/dtos/create-session.dto'
 import { v4 as uuid } from 'uuid'
 
-describe('AppController (e2e)', () => {
+describe('SessionController (e2e)', () => {
   let app: INestApplication
 
   beforeEach(async () => {
@@ -14,24 +15,19 @@ describe('AppController (e2e)', () => {
     }).compile()
 
     app = moduleFixture.createNestApplication()
-    app.useGlobalPipes(new ValidationPipe({ transform: true }))
+    app.useGlobalPipes(
+      new ValidationPipe({ transform: true, forbidUnknownValues: true }),
+    )
     await app.init()
   })
 
-  describe('get profile', () => {
-    describe('unauthenticated', () => {
-      it('should be unauthorized', () => {
-        return request(app.getHttpServer())
-          .get('/auth/profile')
-          .expect(401)
-      })
-    })
-
+  describe('create', () => {
     describe('authenticated', () => {
       const email = `test-${uuid()}@jeanmichel.com`
       const password = 'password'
+      let token: string | undefined = undefined
 
-      it('should return user profile', async () => {
+      beforeEach(async () => {
         await request(app.getHttpServer())
           .post('/auth/register')
           .send({ email, password })
@@ -42,13 +38,22 @@ describe('AppController (e2e)', () => {
           .send({ email, password })
           .expect(201)
 
-        const token = authenticationRes.body.access_token
+        token = authenticationRes.body.access_token
+      })
 
-        return request(app.getHttpServer())
-          .get('/auth/profile')
-          .set('Authorization', `Bearer ${token}`)
-          .expect(200)
-          .expect((res) => res.body.email === email && res.body.id)
+      describe('whith a valid dto', () => {
+        it('should succeed and return a string', () => {
+          const startTime = new Date()
+          const createSessionDto: CreateSessionDto = {
+            name: 'session name',
+            startTime,
+          }
+          return request(app.getHttpServer())
+            .post('/session/create')
+            .set('Authorization', `Bearer ${token}`)
+            .send(createSessionDto)
+            .expect(201)
+        })
       })
     })
   })

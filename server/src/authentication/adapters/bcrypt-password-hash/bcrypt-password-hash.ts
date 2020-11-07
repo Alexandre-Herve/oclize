@@ -1,8 +1,6 @@
-import { Injectable } from '@nestjs/common'
 import { PasswordHash } from '../../domain/ports/password-hash'
 import * as bcrypt from 'bcryptjs'
 
-@Injectable()
 export class BcryptPasswordHash implements PasswordHash {
   private saltRounds = 10
 

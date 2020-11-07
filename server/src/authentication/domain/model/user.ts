@@ -8,10 +8,10 @@ import {
   validateSync,
 } from 'class-validator'
 import { Entity } from '../../../shared/model/entity'
-import { Props } from '../../../shared/model/props'
+import { ValueObject } from '../../../shared/model/value-object'
 import { left, right, Either } from 'fp-ts/lib/Either'
 
-class UserProps extends Props {
+class UserProps extends ValueObject {
   @IsEmail()
   @IsNotEmpty()
   email!: string
