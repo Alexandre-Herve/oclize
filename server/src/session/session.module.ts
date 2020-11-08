@@ -3,7 +3,7 @@ import { SessionController } from './adapters/api/session.controller'
 import { MongoDbModule } from '../infrastructure/mongodb/mobgodb.module'
 import { idServiceProvider } from './config/id-service.provider'
 import { sessionRepositoryProvider } from './config/session-repository.provider'
-import { SessionService } from './domain/domain-services/session.service'
+import { SessionService } from './domain/services/session.service'
 import { SessionViewService } from './adapters/api/views/session-view.service'
 
 @Module({

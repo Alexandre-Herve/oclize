@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common'
 import { LocalAuthGuard } from '../passport/local/local-auth.guard'
 import { JwtAuthGuard } from '../passport/jwt/jwt-auth.guard'
-import { RegistrationService } from '../../domain/domain-services/registration.service'
+import { RegistrationService } from '../../domain/services/registration.service'
 import { CreateUserDto } from '../../domain/ports/create-user.dto'
 import { JwtAccessTokenService } from '../passport/jwt/jwt-access-token.service'
 import { JwtReqUser } from '../passport/jwt/jwt-req-user'

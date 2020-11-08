@@ -1,7 +1,7 @@
 import { Strategy } from 'passport-local'
 import { PassportStrategy } from '@nestjs/passport'
 import { Injectable, UnauthorizedException } from '@nestjs/common'
-import { AuthenticationService } from '../../../domain/domain-services/authentication.service'
+import { AuthenticationService } from '../../../domain/services/authentication.service'
 import { fold } from 'fp-ts/lib/Option'
 import { User } from '../../../domain/model/user'
 

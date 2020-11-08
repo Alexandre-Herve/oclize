@@ -10,7 +10,7 @@ import { JwtAuthGuard } from '../../../authentication/adapters/passport/jwt/jwt-
 import { CreateSessionDto } from './dtos/create-session.dto'
 // import { RenameSessionDto } from './dtos/rename-session.dto'
 // import { InviteToSessionDto } from './dtos/invite-to-session.dto'
-import { SessionService } from '../../domain/domain-services/session.service'
+import { SessionService } from '../../domain/services/session.service'
 import { SessionViewService } from './views/session-view.service'
 
 @Controller('session')
