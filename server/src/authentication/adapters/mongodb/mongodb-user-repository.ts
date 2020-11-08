@@ -4,6 +4,7 @@ import { CreateUserDto } from '../../domain/ports/create-user.dto'
 import { User } from '../../domain/model/user'
 import { Db } from 'mongodb'
 import { Option, fromEither, none } from 'fp-ts/lib/Option'
+import { MONGODB_CONNECTION } from '../../../shared/infrastructure/constants'
 
 const isMongoObject = (x: unknown) =>
   typeof x === 'object' && x !== null && '_id' in x
@@ -11,7 +12,7 @@ const isMongoObject = (x: unknown) =>
 @Injectable()
 export class MongoDbUserRepository implements UserRepository {
   constructor(
-    @Inject('MONGODB_CONNECTION')
+    @Inject(MONGODB_CONNECTION)
     private db: Db,
   ) {}
 
