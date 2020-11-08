@@ -7,6 +7,10 @@ export abstract class Entity<T extends EntityProps> {
     return this._props
   }
 
+  set props(props: T) {
+    this._props = props
+  }
+
   get id() {
     return this._props.id
   }

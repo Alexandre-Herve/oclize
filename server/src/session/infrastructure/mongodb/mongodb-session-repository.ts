@@ -1,3 +1,4 @@
+import { pick } from 'lodash'
 import { Injectable, Inject } from '@nestjs/common'
 import { SessionRepository } from '../../domain/ports/session-repository'
 import { Session, SessionProps } from '../../domain/model/session'
@@ -30,5 +31,15 @@ export class MongoDbSessionRepository implements SessionRepository {
     const params = { id: _id, ...rest }
     const session = await Session.create(params)
     return fromEither(session)
+  }
+
+  public async update(
+    sessionProps: SessionProps,
+    fields: (keyof SessionProps)[],
+  ) {
+    const update = pick(sessionProps, fields)
+    await this.db
+      .collection('sessions')
+      .updateOne({ _id: sessionProps.id }, { $set: update })
   }
 }

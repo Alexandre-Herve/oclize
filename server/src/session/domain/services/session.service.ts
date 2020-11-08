@@ -4,7 +4,8 @@ import { SessionRepository } from '../ports/session-repository'
 import { IdService } from '../ports/id.service'
 import { Session, SessionProps } from '../model/session'
 import { EVENT_REPOSITORY, ID_SERVICE } from '../ports/constants'
-import { Option } from 'fp-ts/lib/Option'
+import { Option, isNone } from 'fp-ts/lib/Option'
+import { Either, left, right } from 'fp-ts/lib/Either'
 
 type CreateSession = Omit<SessionProps, 'invitees' | 'id'>
 
@@ -29,5 +30,22 @@ export class SessionService {
 
   async getById(sessionId: string): Promise<Option<Session>> {
     return this.sessionRepository.getById(sessionId)
+  }
+
+  async rename(
+    sessionId: string,
+    newName: string,
+  ): Promise<Either<string, Session>> {
+    const sessionOption = await this.sessionRepository.getById(sessionId)
+    if (isNone(sessionOption)) {
+      return left('not found')
+    }
+    const session = sessionOption.value
+    const renameValid = await session.rename(newName)
+    if (!renameValid) {
+      return left('invalid request')
+    }
+    await this.sessionRepository.update(session.props, ['name'])
+    return right(session)
   }
 }

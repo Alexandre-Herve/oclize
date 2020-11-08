@@ -11,8 +11,8 @@ export const authenticate = async (
   app: INestApplication,
   options: AuthOptions = {},
 ) => {
-  const email = options?.email ?? `jean-michel-${uuid()}@test.com`
-  const password = options?.password ?? 'password'
+  const email = options.email ?? `jean-michel-${uuid()}@test.com`
+  const password = options.password ?? 'password'
 
   const registerRes = await request(app.getHttpServer())
     .post('/auth/register')
@@ -26,6 +26,6 @@ export const authenticate = async (
     .send({ email, password })
     .expect(201)
 
-  const token = authenticationRes.body.access_token
+  const token = authenticationRes.body.access_token as string
   return { token, email, password, userId }
 }

@@ -16,7 +16,6 @@ export class SessionProps extends EntityProps {
   @IsString()
   readonly createdBy!: string
 
-  @IsNotEmpty()
   @IsDate()
   readonly createdAt!: Date
 
@@ -28,7 +27,6 @@ export class SessionProps extends EntityProps {
   readonly invitees!: Invitee[]
 
   @IsDate()
-  @IsNotEmpty()
   readonly startTime!: Date
 }
 
@@ -45,15 +43,25 @@ export class Session extends AggregateRoot<SessionProps> {
     return right(session)
   }
 
+  public async changeStartTime() {
+    throw new Error('not implemented')
+  }
+
   public async invite(_email: string) {
     throw new Error('not implemented')
   }
-  public async rename(_name: string) {
-    throw new Error('not implemented')
+
+  public async rename(name: string): Promise<boolean> {
+    const newProps = { ...this.props, name }
+    const sessionProps = SessionProps.create<SessionProps>(newProps)
+    const errors = await validate(sessionProps)
+    if (errors.length > 0) {
+      return false
+    }
+    this.props = sessionProps
+    return true
   }
-  public async move() {
-    throw new Error('not implemented')
-  }
+
   public async remove() {
     throw new Error('not implemented')
   }
