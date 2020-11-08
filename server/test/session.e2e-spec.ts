@@ -4,7 +4,7 @@ import { AppModule } from './../src/app.module'
 import { ValidationPipe } from '@nestjs/common'
 import * as request from 'supertest'
 import { CreateSessionDto } from '../src/session/adapters/api/dtos/create-session.dto'
-import { v4 as uuid } from 'uuid'
+import { authenticate } from './helpers/auth'
 
 describe('SessionController (e2e)', () => {
   let app: INestApplication
@@ -23,22 +23,11 @@ describe('SessionController (e2e)', () => {
 
   describe('create', () => {
     describe('authenticated', () => {
-      const email = `test-${uuid()}@jeanmichel.com`
-      const password = 'password'
       let token: string | undefined = undefined
 
       beforeEach(async () => {
-        await request(app.getHttpServer())
-          .post('/auth/register')
-          .send({ email, password })
-          .expect(201)
-
-        const authenticationRes = await request(app.getHttpServer())
-          .post('/auth/login')
-          .send({ email, password })
-          .expect(201)
-
-        token = authenticationRes.body.access_token
+        const authRes = await authenticate(app)
+        token = authRes.token
       })
 
       describe('whith a valid dto', () => {

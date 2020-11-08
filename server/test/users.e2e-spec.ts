@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common'
 import * as request from 'supertest'
 import { AppModule } from './../src/app.module'
 import { ValidationPipe } from '@nestjs/common'
-import { v4 as uuid } from 'uuid'
+import { authenticate } from './helpers/auth'
 
 describe('AppController (e2e)', () => {
   let app: INestApplication
@@ -28,22 +28,8 @@ describe('AppController (e2e)', () => {
     })
 
     describe('authenticated', () => {
-      const email = `test-${uuid()}@jeanmichel.com`
-      const password = 'password'
-
       it('should return user profile', async () => {
-        await request(app.getHttpServer())
-          .post('/auth/register')
-          .send({ email, password })
-          .expect(201)
-
-        const authenticationRes = await request(app.getHttpServer())
-          .post('/auth/login')
-          .send({ email, password })
-          .expect(201)
-
-        const token = authenticationRes.body.access_token
-
+        const { token, email } = await authenticate(app)
         return request(app.getHttpServer())
           .get('/auth/profile')
           .set('Authorization', `Bearer ${token}`)
