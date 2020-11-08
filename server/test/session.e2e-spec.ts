@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common'
 import { AppModule } from './../src/app.module'
 import { ValidationPipe } from '@nestjs/common'
 import * as request from 'supertest'
-import { CreateSessionDto } from '../src/session/adapters/api/dtos/create-session.dto'
+import { CreateSessionDto } from '../src/session/application/api/dtos/create-session.dto'
 import { authenticate } from './helpers/auth'
 
 describe('SessionController (e2e)', () => {

@@ -1,4 +1,4 @@
-import { MongoDbSessionRepository } from '../adapters/mongodb/mongodb-session-repository'
+import { MongoDbSessionRepository } from '../infrastructure/mongodb/mongodb-session-repository'
 import { EVENT_REPOSITORY } from '../domain/ports/constants'
 
 export const sessionRepositoryProvider = {

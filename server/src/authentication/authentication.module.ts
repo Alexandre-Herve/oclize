@@ -1,16 +1,16 @@
 import { Module } from '@nestjs/common'
 import { PassportModule } from '@nestjs/passport'
 import { JwtModule } from '@nestjs/jwt'
-import { JwtStrategy } from './adapters/passport/jwt/jwt.strategy'
-import { LocalStrategy } from './adapters/passport/local/local.strategy'
-import { JwtConfigService } from './adapters/passport/jwt/jwt-config.service'
+import { JwtStrategy } from './application/passport/jwt/jwt.strategy'
+import { LocalStrategy } from './application/passport/local/local.strategy'
+import { JwtConfigService } from './application/passport/jwt/jwt-config.service'
 import { MongoDbModule } from '../infrastructure/mongodb/mobgodb.module'
 import { passwordHashProvider } from './config/password-hash.provider'
 import { usersRepositoryProvider } from './config/user-repository.provider'
 import { AuthenticationService } from './domain/services/authentication.service'
 import { RegistrationService } from './domain/services/registration.service'
-import { JwtAccessTokenService } from './adapters/passport/jwt/jwt-access-token.service'
-import { AuthenticationController } from './adapters/api/authentication.controller'
+import { JwtAccessTokenService } from './application/passport/jwt/jwt-access-token.service'
+import { AuthenticationController } from './application/api/authentication.controller'
 
 @Module({
   controllers: [AuthenticationController],

@@ -6,7 +6,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common'
-import { JwtAuthGuard } from '../../../authentication/adapters/passport/jwt/jwt-auth.guard'
+import { JwtAuthGuard } from '../../../authentication/application/passport/jwt/jwt-auth.guard'
 import { CreateSessionDto } from './dtos/create-session.dto'
 // import { RenameSessionDto } from './dtos/rename-session.dto'
 // import { InviteToSessionDto } from './dtos/invite-to-session.dto'

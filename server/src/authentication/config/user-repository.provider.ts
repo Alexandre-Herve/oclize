@@ -1,4 +1,4 @@
-import { MongoDbUserRepository } from '../adapters/mongodb/mongodb-user-repository'
+import { MongoDbUserRepository } from '../infrastructure/mongodb/mongodb-user-repository'
 import { USER_REPOSITORY } from '../domain/ports/constants'
 
 export const usersRepositoryProvider = {
