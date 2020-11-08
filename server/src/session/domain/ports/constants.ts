@@ -1,0 +1,2 @@
+export const EVENT_REPOSITORY = 'EVENT_REPOSITORY'
+export const ID_SERVICE = 'ID_SERVICE'

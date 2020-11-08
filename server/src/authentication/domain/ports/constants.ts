@@ -1,0 +1,2 @@
+export const PASSWORD_HASH = 'PASSWORD_HASH'
+export const USER_REPOSITORY = 'USER_REPOSITORY'

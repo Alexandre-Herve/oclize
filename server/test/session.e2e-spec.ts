@@ -31,17 +31,26 @@ describe('SessionController (e2e)', () => {
       })
 
       describe('whith a valid dto', () => {
-        it('should succeed and return a string', () => {
+        it('should succeed and return a session', async () => {
           const startTime = new Date()
+          const name = 'oclize session'
           const createSessionDto: CreateSessionDto = {
-            name: 'session name',
+            name,
             startTime,
           }
-          return request(app.getHttpServer())
+          await request(app.getHttpServer())
             .post('/session/create')
             .set('Authorization', `Bearer ${token}`)
             .send(createSessionDto)
             .expect(201)
+            .expect((res) => {
+              const body = res.body
+              return (
+                body.name === name &&
+                body.startTime === startTime.toJSON() &&
+                body.id
+              )
+            })
         })
       })
     })

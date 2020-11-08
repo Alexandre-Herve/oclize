@@ -7,9 +7,8 @@ export enum InviteeStatus {
 }
 
 export class Invitee extends ValueObject {
-  @IsNotEmpty()
   @IsString()
-  userId!: string
+  userId?: string
 
   @IsNotEmpty()
   @IsEmail()

@@ -11,18 +11,26 @@ import { CreateSessionDto } from './dtos/create-session.dto'
 // import { RenameSessionDto } from './dtos/rename-session.dto'
 // import { InviteToSessionDto } from './dtos/invite-to-session.dto'
 import { SessionService } from '../../domain/domain-services/session.service'
+import { SessionViewService } from './views/session-view.service'
 
 @Controller('session')
 @UseGuards(JwtAuthGuard)
 export class SessionController {
-  constructor(private sessionService: SessionService) {}
+  constructor(
+    private sessionService: SessionService,
+    private sessionViewService: SessionViewService,
+  ) {}
 
   @Post('create')
-  async register(@Request() req: any, @Body() createSessionDto: CreateSessionDto) {
+  async register(
+    @Request() req: any,
+    @Body() createSessionDto: CreateSessionDto,
+  ) {
     const createdBy = req.user.id
     const createdAt = new Date()
     const createSession = { ...createSessionDto, createdBy, createdAt }
-    this.sessionService.create(createSession)
+    const session = await this.sessionService.create(createSession)
+    return this.sessionViewService.view(session)
   }
 
   /*

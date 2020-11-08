@@ -14,22 +14,22 @@ import { Invitee } from './invitee'
 export class SessionProps extends ValueObject {
   @IsNotEmpty()
   @IsString()
-  createdBy!: string
+  readonly createdBy!: string
 
   @IsNotEmpty()
   @IsDate()
-  createdAt!: Date
+  readonly createdAt!: Date
 
   @IsNotEmpty()
   @IsString()
-  name!: string
+  readonly name!: string
 
   @ValidateNested()
-  invitees!: Invitee[]
+  readonly invitees!: Invitee[]
 
   @IsDate()
   @IsNotEmpty()
-  startTime!: Date
+  readonly startTime!: Date
 }
 
 export class Session extends AggregateRoot<SessionProps> {
