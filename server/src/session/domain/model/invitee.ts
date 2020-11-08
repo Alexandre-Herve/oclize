@@ -1,4 +1,10 @@
-import { IsEmail, IsNotEmpty, IsString, IsIn } from 'class-validator'
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  IsOptional,
+  IsIn,
+} from 'class-validator'
 import { ValueObject } from '../../../shared/model/value-object'
 
 export enum InviteeStatus {
@@ -8,6 +14,7 @@ export enum InviteeStatus {
 
 export class Invitee extends ValueObject {
   @IsString()
+  @IsOptional()
   userId?: string
 
   @IsNotEmpty()
