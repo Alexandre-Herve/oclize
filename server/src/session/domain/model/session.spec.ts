@@ -17,13 +17,14 @@ describe('Session', () => {
     const params = {
       createdAt,
       createdBy,
+      id,
       invitees,
       name,
       startTime,
     }
 
     it('should return a valid session', async () => {
-      const sessionResult = await Session.create(id, params)
+      const sessionResult = await Session.create(params)
       if (!isRight(sessionResult)) {
         throw new Error(`session creation failed with ${sessionResult.left}`)
       }
@@ -42,7 +43,7 @@ describe('Session', () => {
           status: InviteeStatus.Invited,
         }),
       ]
-      const sessionResult = await Session.create(id, { ...params, invitees })
+      const sessionResult = await Session.create({ ...params, invitees })
       if (!isLeft(sessionResult)) {
         throw new Error(`session should not have been valid`)
       }

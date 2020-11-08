@@ -8,10 +8,10 @@ import {
   validate,
 } from 'class-validator'
 import { AggregateRoot } from '../../../shared/model/aggregate-root'
-import { ValueObject } from '../../../shared/model/value-object'
+import { EntityProps } from '../../../shared/model/entity-props'
 import { Invitee } from './invitee'
 
-export class SessionProps extends ValueObject {
+export class SessionProps extends EntityProps {
   @IsNotEmpty()
   @IsString()
   readonly createdBy!: string
@@ -33,12 +33,7 @@ export class SessionProps extends ValueObject {
 }
 
 export class Session extends AggregateRoot<SessionProps> {
-  private constructor(id: string, props: SessionProps) {
-    super(id, props)
-  }
-
   public static async create(
-    id: string,
     props: SessionProps,
   ): Promise<Either<ValidationError[], Session>> {
     const sessionProps = SessionProps.create<SessionProps>(props)
@@ -46,7 +41,7 @@ export class Session extends AggregateRoot<SessionProps> {
     if (errors.length > 0) {
       return left(errors)
     }
-    const session = new Session(id, sessionProps)
+    const session = new Session(sessionProps)
     return right(session)
   }
 

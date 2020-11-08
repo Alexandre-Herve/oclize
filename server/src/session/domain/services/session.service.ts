@@ -5,7 +5,7 @@ import { IdService } from '../ports/id.service'
 import { Session, SessionProps } from '../model/session'
 import { EVENT_REPOSITORY, ID_SERVICE } from '../ports/constants'
 
-type CreateSession = Omit<SessionProps, 'invitees'>
+type CreateSession = Omit<SessionProps, 'invitees' | 'id'>
 
 @Injectable()
 export class SessionService {
@@ -16,8 +16,8 @@ export class SessionService {
 
   async create(createSession: CreateSession): Promise<Session> {
     const id = this.idService.newId()
-    const sessionProps = { ...createSession, invitees: [] }
-    const sessionResult = await Session.create(id, sessionProps)
+    const sessionProps = { ...createSession, id, invitees: [] }
+    const sessionResult = await Session.create(sessionProps)
     if (isLeft(sessionResult)) {
       throw new Error('Failed to create session')
     }

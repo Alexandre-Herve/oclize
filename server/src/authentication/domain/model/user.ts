@@ -8,10 +8,10 @@ import {
   validate,
 } from 'class-validator'
 import { Entity } from '../../../shared/model/entity'
-import { ValueObject } from '../../../shared/model/value-object'
+import { EntityProps } from '../../../shared/model/entity-props'
 import { left, right, Either } from 'fp-ts/lib/Either'
 
-class UserProps extends ValueObject {
+class UserProps extends EntityProps {
   @IsEmail()
   @IsNotEmpty()
   email!: string
@@ -23,20 +23,15 @@ class UserProps extends ValueObject {
 }
 
 export class User extends Entity<UserProps> {
-  private constructor(id: string, props: UserProps) {
-    super(id, props)
-  }
-
   public static async create(
-    id: string,
     params: UserProps,
   ): Promise<Either<ValidationError[], User>> {
-    const userProps = UserProps.create(params)
+    const userProps = UserProps.create<UserProps>(params)
     const errors = await validate(userProps)
     if (errors.length > 0) {
       return left(errors)
     }
-    const user = new User(id, userProps)
+    const user = new User(userProps)
     return right(user)
   }
 }
