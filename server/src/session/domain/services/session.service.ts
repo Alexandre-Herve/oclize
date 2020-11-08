@@ -17,7 +17,7 @@ export class SessionService {
   async create(createSession: CreateSession): Promise<Session> {
     const id = this.idService.newId()
     const sessionProps = { ...createSession, invitees: [] }
-    const sessionResult = Session.create(id, sessionProps)
+    const sessionResult = await Session.create(id, sessionProps)
     if (isLeft(sessionResult)) {
       throw new Error('Failed to create session')
     }

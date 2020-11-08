@@ -5,7 +5,7 @@ import {
   IsString,
   MinLength,
   ValidationError,
-  validateSync,
+  validate,
 } from 'class-validator'
 import { Entity } from '../../../shared/model/entity'
 import { ValueObject } from '../../../shared/model/value-object'
@@ -27,12 +27,12 @@ export class User extends Entity<UserProps> {
     super(id, props)
   }
 
-  public static create(
+  public static async create(
     id: string,
     params: UserProps,
-  ): Either<ValidationError[], User> {
+  ): Promise<Either<ValidationError[], User>> {
     const userProps = UserProps.create(params)
-    const errors = validateSync(userProps)
+    const errors = await validate(userProps)
     if (errors.length > 0) {
       return left(errors)
     }

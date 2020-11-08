@@ -5,7 +5,7 @@ import {
   IsString,
   ValidateNested,
   ValidationError,
-  validateSync,
+  validate,
 } from 'class-validator'
 import { AggregateRoot } from '../../../shared/model/aggregate-root'
 import { ValueObject } from '../../../shared/model/value-object'
@@ -37,12 +37,12 @@ export class Session extends AggregateRoot<SessionProps> {
     super(id, props)
   }
 
-  public static create(
+  public static async create(
     id: string,
     props: SessionProps,
-  ): Either<ValidationError[], Session> {
+  ): Promise<Either<ValidationError[], Session>> {
     const sessionProps = SessionProps.create<SessionProps>(props)
-    const errors = validateSync(sessionProps)
+    const errors = await validate(sessionProps)
     if (errors.length > 0) {
       return left(errors)
     }

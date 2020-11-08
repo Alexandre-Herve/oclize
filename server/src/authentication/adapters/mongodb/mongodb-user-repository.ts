@@ -26,7 +26,7 @@ export class MongoDbUserRepository implements UserRepository {
     if (!isMongoObject(res)) {
       return none
     }
-    const user = User.create(res._id, {
+    const user = await User.create(res._id, {
       email: res.email,
       password: res.password,
     })

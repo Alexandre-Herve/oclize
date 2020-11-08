@@ -8,7 +8,7 @@ describe('User', () => {
 
   describe('new', () => {
     it('should return a valid user', async () => {
-      const userResult = User.create(id, { email, password })
+      const userResult = await User.create(id, { email, password })
       if (!isRight(userResult)) {
         throw new Error('user should have been valid')
       }
@@ -19,7 +19,7 @@ describe('User', () => {
     })
 
     it('should accept an undefined password', async () => {
-      const userResult = User.create(id, { email })
+      const userResult = await User.create(id, { email })
       if (!isRight(userResult)) {
         throw new Error('user should have been valid')
       }
@@ -31,7 +31,10 @@ describe('User', () => {
 
     it('should return errors for an invalid email', async () => {
       const invalidEmail = 'invalid'
-      const userResult = User.create(id, { email: invalidEmail, password })
+      const userResult = await User.create(id, {
+        email: invalidEmail,
+        password,
+      })
       if (!isLeft(userResult)) {
         throw new Error('user should not have been valid')
       }
@@ -40,7 +43,10 @@ describe('User', () => {
 
     it('should return errors for an invalid password', async () => {
       const invalidPassword = 'ha'
-      const userResult = User.create(id, { email, password: invalidPassword })
+      const userResult = await User.create(id, {
+        email,
+        password: invalidPassword,
+      })
       if (!isLeft(userResult)) {
         throw new Error('user should not have been valid')
       }
