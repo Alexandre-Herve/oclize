@@ -48,6 +48,7 @@ describe('SessionController (e2e)', () => {
               return (
                 body.name === name &&
                 body.startTime === startTime.toJSON() &&
+                body.invitees.length === 0 &&
                 body.id
               )
             })

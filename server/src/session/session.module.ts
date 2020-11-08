@@ -5,15 +5,17 @@ import { idServiceProvider } from './config/id-service.provider'
 import { sessionRepositoryProvider } from './config/session-repository.provider'
 import { SessionService } from './domain/services/session.service'
 import { SessionViewService } from './adapters/api/views/session-view.service'
+import { InviteeViewService } from './adapters/api/views/invitee-view.service'
 
 @Module({
   controllers: [SessionController],
   imports: [MongoDbModule],
   providers: [
-    sessionRepositoryProvider,
+    InviteeViewService,
     SessionService,
     SessionViewService,
     idServiceProvider,
+    sessionRepositoryProvider,
   ],
 })
 export class SessionModule {}

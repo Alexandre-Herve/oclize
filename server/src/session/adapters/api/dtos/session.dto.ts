@@ -1,5 +1,8 @@
-export class SessionDto {
-  readonly id!: string
-  readonly name!: string
-  readonly startTime!: Date
+import { InviteeDto } from './invitee.dto'
+
+export interface SessionDto {
+  readonly id: string
+  readonly invitees: InviteeDto[]
+  readonly name: string
+  readonly startTime: Date
 }
