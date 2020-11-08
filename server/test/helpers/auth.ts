@@ -14,10 +14,12 @@ export const authenticate = async (
   const email = options?.email ?? `jean-michel-${uuid()}@test.com`
   const password = options?.password ?? 'password'
 
-  await request(app.getHttpServer())
+  const registerRes = await request(app.getHttpServer())
     .post('/auth/register')
     .send({ email, password })
     .expect(201)
+
+  const userId = registerRes.body
 
   const authenticationRes = await request(app.getHttpServer())
     .post('/auth/login')
@@ -25,5 +27,5 @@ export const authenticate = async (
     .expect(201)
 
   const token = authenticationRes.body.access_token
-  return { token, email, password }
+  return { token, email, password, userId }
 }

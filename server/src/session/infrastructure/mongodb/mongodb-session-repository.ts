@@ -1,8 +1,12 @@
 import { Injectable, Inject } from '@nestjs/common'
 import { SessionRepository } from '../../domain/ports/session-repository'
-import { SessionProps } from '../../domain/model/session'
+import { Session, SessionProps } from '../../domain/model/session'
 import { Db } from 'mongodb'
 import { MONGODB_CONNECTION } from '../../../shared/infrastructure/constants'
+import { Option, fromEither, none } from 'fp-ts/lib/Option'
+
+const isMongoObject = (x: unknown) =>
+  typeof x === 'object' && x !== null && '_id' in x
 
 @Injectable()
 export class MongoDbSessionRepository implements SessionRepository {
@@ -15,5 +19,16 @@ export class MongoDbSessionRepository implements SessionRepository {
     const { id, ...rest } = sessionProps
     const doc = { _id: id, ...rest }
     await this.db.collection('sessions').insertOne(doc)
+  }
+
+  public async getById(sessionId: string): Promise<Option<Session>> {
+    const res = await this.db.collection('sessions').findOne({ _id: sessionId })
+    if (!isMongoObject(res)) {
+      return none
+    }
+    const { _id, ...rest } = res
+    const params = { id: _id, ...rest }
+    const session = await Session.create(params)
+    return fromEither(session)
   }
 }

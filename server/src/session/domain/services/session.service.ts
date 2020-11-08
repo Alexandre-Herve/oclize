@@ -4,6 +4,7 @@ import { SessionRepository } from '../ports/session-repository'
 import { IdService } from '../ports/id.service'
 import { Session, SessionProps } from '../model/session'
 import { EVENT_REPOSITORY, ID_SERVICE } from '../ports/constants'
+import { Option } from 'fp-ts/lib/Option'
 
 type CreateSession = Omit<SessionProps, 'invitees' | 'id'>
 
@@ -24,5 +25,9 @@ export class SessionService {
     const session = sessionResult.right
     await this.sessionRepository.create(session.props)
     return session
+  }
+
+  async getById(sessionId: string): Promise<Option<Session>> {
+    return this.sessionRepository.getById(sessionId)
   }
 }
