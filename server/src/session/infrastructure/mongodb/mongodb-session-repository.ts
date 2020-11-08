@@ -11,8 +11,9 @@ export class MongoDbSessionRepository implements SessionRepository {
     private db: Db,
   ) {}
 
-  public async create(id: string, sessionProps: SessionProps) {
-    const doc = { _id: id, ...sessionProps }
+  public async create(sessionProps: SessionProps) {
+    const { id, ...rest } = sessionProps
+    const doc = { _id: id, ...rest }
     await this.db.collection('sessions').insertOne(doc)
   }
 }

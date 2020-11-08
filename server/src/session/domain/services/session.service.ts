@@ -22,7 +22,7 @@ export class SessionService {
       throw new Error('Failed to create session')
     }
     const session = sessionResult.right
-    await this.sessionRepository.create(id, session.props)
+    await this.sessionRepository.create(session.props)
     return session
   }
 }
