@@ -8,14 +8,15 @@ export class SessionViewService {
   constructor(private inviteeViewService: InviteeViewService) {}
 
   public view(session: Session): SessionDto {
-    const { name, startTime, invitees } = session.props
+    const { name, startTime, invitees, createdBy } = session.props
     const { id } = session
     const viewedInvitees = invitees.map(this.inviteeViewService.view)
     return {
-      name,
-      startTime,
+      createdBy,
       id,
       invitees: viewedInvitees,
+      name,
+      startTime,
     }
   }
 }

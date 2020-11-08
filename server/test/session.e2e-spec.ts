@@ -52,21 +52,17 @@ describe('SessionController (e2e)', () => {
     })
 
     it('should return a session', async () => {
-      await request(app.getHttpServer())
+      const { body } = await request(app.getHttpServer())
         .get(`/session/${id}`)
         .set('Authorization', `Bearer ${token}`)
         .send()
         .expect(200)
-        .expect((res) => {
-          const body = res.body
-          return (
-            body.createdBy === userId &&
-            body.id === id &&
-            body.invitees.length === 0 &&
-            body.name === name &&
-            body.startTime === startTime
-          )
-        })
+
+      expect(body.createdBy).toBe(userId)
+      expect(body.id).toBe(id)
+      expect(body.invitees.length).toEqual(0)
+      expect(body.name).toBe(name)
+      expect(body.startTime).toBe(startTime!.toJSON())
     })
   })
 
@@ -87,20 +83,16 @@ describe('SessionController (e2e)', () => {
             name,
             startTime,
           }
-          await request(app.getHttpServer())
+          const { body } = await request(app.getHttpServer())
             .post('/session/create')
             .set('Authorization', `Bearer ${token}`)
             .send(createSessionDto)
             .expect(201)
-            .expect((res) => {
-              const body = res.body
-              return (
-                body.name === name &&
-                body.startTime === startTime.toJSON() &&
-                body.invitees.length === 0 &&
-                body.id
-              )
-            })
+
+          expect(body.name).toBe(name)
+          expect(body.startTime).toBe(startTime.toJSON())
+          expect(body.invitees.length).toBe(0)
+          expect(body.id).toBeDefined()
         })
       })
     })
