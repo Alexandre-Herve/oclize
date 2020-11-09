@@ -15,7 +15,7 @@ import { UpdateSessionDto } from './dtos/update-session.dto'
 // import { InviteToSessionDto } from './dtos/invite-to-session.dto'
 import { SessionService } from '../../domain/services/session.service'
 import { SessionViewService } from './views/session-view.service'
-import { isSome } from 'fp-ts/lib/Option'
+import { isNone } from 'fp-ts/lib/Option'
 import { isRight } from 'fp-ts/lib/Either'
 
 @Controller('session')
@@ -34,8 +34,11 @@ export class SessionController {
     const createdBy = req.user.id
     const createdAt = new Date()
     const createSession = { ...createSessionDto, createdBy, createdAt }
-    const session = await this.sessionService.create(createSession)
-    return this.sessionViewService.view(session)
+    const sessionOption = await this.sessionService.create(createSession)
+    if (isNone(sessionOption)) {
+      throw new BadRequestException()
+    }
+    return this.sessionViewService.view(sessionOption.value)
   }
 
   @Get(':sessionId')
@@ -48,7 +51,7 @@ export class SessionController {
       sessionId,
       requestAuthor,
     )
-    if (!isSome(sessionOption)) {
+    if (isNone(sessionOption)) {
       throw new NotFoundException()
     }
     return this.sessionViewService.view(sessionOption.value)

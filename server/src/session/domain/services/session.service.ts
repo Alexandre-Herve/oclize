@@ -5,7 +5,7 @@ import { SessionRepository } from '../ports/session-repository'
 import { IdService } from '../ports/id.service'
 import { Session, SessionProps, SessionUpdate } from '../model/session'
 import { EVENT_REPOSITORY, ID_SERVICE } from '../ports/constants'
-import { Option, isNone, none } from 'fp-ts/lib/Option'
+import { Option, isNone, none, some } from 'fp-ts/lib/Option'
 import { Either, left, right } from 'fp-ts/lib/Either'
 
 type CreateSession = Omit<SessionProps, 'invitees' | 'id'>
@@ -17,16 +17,16 @@ export class SessionService {
     @Inject(ID_SERVICE) private idService: IdService,
   ) {}
 
-  async create(createSession: CreateSession): Promise<Session> {
+  async create(createSession: CreateSession): Promise<Option<Session>> {
     const id = this.idService.newId()
     const sessionProps = { ...createSession, id, invitees: [] }
     const sessionResult = await Session.create(sessionProps)
     if (isLeft(sessionResult)) {
-      throw new Error('Failed to create session')
+      return none
     }
     const session = sessionResult.right
     await this.sessionRepository.create(session.props)
-    return session
+    return some(session)
   }
 
   async getById(
