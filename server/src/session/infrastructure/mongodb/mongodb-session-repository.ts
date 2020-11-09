@@ -1,4 +1,4 @@
-import { pick } from 'lodash'
+import { pick } from 'ramda'
 import { Injectable, Inject } from '@nestjs/common'
 import { SessionRepository } from '../../domain/ports/session-repository'
 import { Session, SessionProps } from '../../domain/model/session'
@@ -37,7 +37,7 @@ export class MongoDbSessionRepository implements SessionRepository {
     sessionProps: SessionProps,
     fields: (keyof SessionProps)[],
   ) {
-    const update = pick(sessionProps, fields)
+    const update = pick(fields, sessionProps)
     await this.db
       .collection('sessions')
       .updateOne({ _id: sessionProps.id }, { $set: update })
