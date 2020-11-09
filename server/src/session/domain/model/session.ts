@@ -30,6 +30,8 @@ export class SessionProps extends EntityProps {
   readonly startTime!: Date
 }
 
+export type SessionUpdate = Partial<Pick<SessionProps, 'startTime' | 'name'>>
+
 export class Session extends AggregateRoot<SessionProps> {
   public static async create(
     props: SessionProps,
@@ -43,16 +45,12 @@ export class Session extends AggregateRoot<SessionProps> {
     return right(session)
   }
 
-  public async changeStartTime() {
-    throw new Error('not implemented')
-  }
-
   public async invite(_email: string) {
     throw new Error('not implemented')
   }
 
-  public async rename(name: string): Promise<boolean> {
-    const newProps = { ...this.props, name }
+  public async update(sessionUpdate: SessionUpdate): Promise<boolean> {
+    const newProps = { ...this.props, ...sessionUpdate }
     const sessionProps = SessionProps.create<SessionProps>(newProps)
     const errors = await validate(sessionProps)
     if (errors.length > 0) {

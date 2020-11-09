@@ -1,10 +1,11 @@
+import { keys } from 'ramda'
 import { isLeft } from 'fp-ts/lib/Either'
 import { Injectable, Inject } from '@nestjs/common'
 import { SessionRepository } from '../ports/session-repository'
 import { IdService } from '../ports/id.service'
-import { Session, SessionProps } from '../model/session'
+import { Session, SessionProps, SessionUpdate } from '../model/session'
 import { EVENT_REPOSITORY, ID_SERVICE } from '../ports/constants'
-import { Option, isNone } from 'fp-ts/lib/Option'
+import { Option, isNone, none } from 'fp-ts/lib/Option'
 import { Either, left, right } from 'fp-ts/lib/Either'
 
 type CreateSession = Omit<SessionProps, 'invitees' | 'id'>
@@ -28,24 +29,46 @@ export class SessionService {
     return session
   }
 
-  async getById(sessionId: string): Promise<Option<Session>> {
-    return this.sessionRepository.getById(sessionId)
+  async getById(
+    sessionId: string,
+    requestAuthor: string,
+  ): Promise<Option<Session>> {
+    const sessionOption = await this.sessionRepository.getById(sessionId)
+    if (isNone(sessionOption)) {
+      return none
+    }
+    const session = sessionOption.value
+    const requestedByAuthor = requestAuthor === session.props.createdBy
+    if (!requestedByAuthor) {
+      return none
+    }
+    return sessionOption
   }
 
-  async rename(
+  async update(
     sessionId: string,
-    newName: string,
+    requestAuthor: string,
+    sessionUpdate: SessionUpdate,
   ): Promise<Either<string, Session>> {
     const sessionOption = await this.sessionRepository.getById(sessionId)
     if (isNone(sessionOption)) {
       return left('not found')
     }
+
     const session = sessionOption.value
-    const renameValid = await session.rename(newName)
-    if (!renameValid) {
+
+    const requestedByAuthor = requestAuthor === session.props.createdBy
+    if (!requestedByAuthor) {
+      return left('unauthorized')
+    }
+
+    const updateValid = await session.update(sessionUpdate)
+    if (!updateValid) {
       return left('invalid request')
     }
-    await this.sessionRepository.update(session.props, ['name'])
+
+    const updateKeys = keys(sessionUpdate)
+    await this.sessionRepository.update(session.props, updateKeys)
     return right(session)
   }
 }

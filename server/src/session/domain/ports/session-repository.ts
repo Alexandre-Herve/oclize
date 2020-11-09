@@ -6,6 +6,6 @@ export interface SessionRepository {
   getById(sessionId: string): Promise<Option<Session>>
   update(
     sessionProps: SessionProps,
-    fields: (keyof SessionProps)[],
+    fields: Exclude<keyof SessionProps, 'id'>[],
   ): Promise<void>
 }

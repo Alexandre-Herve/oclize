@@ -11,12 +11,12 @@ import {
 } from '@nestjs/common'
 import { JwtAuthGuard } from '../../../authentication/application/passport/jwt/jwt-auth.guard'
 import { CreateSessionDto } from './dtos/create-session.dto'
-import { RenameSessionDto } from './dtos/rename-session.dto'
+import { UpdateSessionDto } from './dtos/update-session.dto'
 // import { InviteToSessionDto } from './dtos/invite-to-session.dto'
 import { SessionService } from '../../domain/services/session.service'
 import { SessionViewService } from './views/session-view.service'
 import { isSome } from 'fp-ts/lib/Option'
-import { isLeft } from 'fp-ts/lib/Either'
+import { isRight } from 'fp-ts/lib/Either'
 
 @Controller('session')
 @UseGuards(JwtAuthGuard)
@@ -28,8 +28,8 @@ export class SessionController {
 
   @Post('create')
   async create(
-    @Request() req: any,
     @Body() createSessionDto: CreateSessionDto,
+    @Request() req: any,
   ) {
     const createdBy = req.user.id
     const createdAt = new Date()
@@ -38,30 +38,43 @@ export class SessionController {
     return this.sessionViewService.view(session)
   }
 
-  // TODO: permissions
   @Get(':sessionId')
-  async get(@Param() { sessionId }: { sessionId: string }) {
-    const sessionOption = await this.sessionService.getById(sessionId)
+  async get(
+    @Param() { sessionId }: { sessionId: string },
+    @Request() req: any,
+  ) {
+    const requestAuthor = req.user.id
+    const sessionOption = await this.sessionService.getById(
+      sessionId,
+      requestAuthor,
+    )
     if (!isSome(sessionOption)) {
       throw new NotFoundException()
     }
     return this.sessionViewService.view(sessionOption.value)
   }
 
-  // TODO: permissions
-  @Post(':sessionId/rename')
-  async rename(
+  @Post(':sessionId/update')
+  async update(
+    @Body() updateSessionDto: UpdateSessionDto,
     @Param() { sessionId }: { sessionId: string },
-    @Body() renameSessionDto: RenameSessionDto,
+    @Request() req: any,
   ) {
-    const res = await this.sessionService.rename(
+    const requestAuthor = req.user.id
+    const res = await this.sessionService.update(
       sessionId,
-      renameSessionDto.name,
+      requestAuthor,
+      updateSessionDto,
     )
-    if (isLeft(res)) {
+    if (isRight(res)) {
+      return true
+    }
+    const reason = res.left
+    if (reason === 'not found' || reason === 'unauthorized') {
+      throw new NotFoundException()
+    } else {
       throw new BadRequestException()
     }
-    return true
   }
 
   /*

@@ -52,5 +52,22 @@ describe('SessionController (e2e)', () => {
       expect(body.name).toBe(name)
       expect(body.startTime).toBe(startTime!.toJSON())
     })
+
+    describe('with other user token', () => {
+      let otherToken: string | undefined = undefined
+
+      beforeEach(async () => {
+        const authRes = await authenticate(app)
+        otherToken = authRes.token
+      })
+
+      it('should return a not found error', async () => {
+        await request(app.getHttpServer())
+          .get(`/session/${id}`)
+          .set('Authorization', `Bearer ${otherToken}`)
+          .send()
+          .expect(404)
+      })
+    })
   })
 })
