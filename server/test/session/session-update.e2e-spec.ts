@@ -9,6 +9,9 @@ import { v4 as uuid } from 'uuid'
 
 describe('SessionController (e2e)', () => {
   let app: INestApplication
+  let id: string | undefined = undefined
+  let token: string | undefined = undefined
+  let startTime: Date | undefined = undefined
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -23,27 +26,28 @@ describe('SessionController (e2e)', () => {
   })
 
   describe('update', () => {
-    let id: string | undefined = undefined
-    let token: string | undefined = undefined
-    let startTime: Date | undefined = undefined
-
     beforeEach(async () => {
       const authRes = await authenticate(app)
       token = authRes.token
 
-      const res = await createSession(app, token)
+      const tomorrow = new Date()
+      tomorrow.setDate(tomorrow.getDate() + 1)
+
+      const res = await createSession(app, token, { startTime: tomorrow })
       id = res.id
       startTime = res.startTime
     })
 
-    describe('with a valid name', () => {
+    describe('with valid params', () => {
       it('should rename a session', async () => {
         const newName = `newName-${uuid}`
+        const newStartTime = new Date()
+        newStartTime.setDate(newStartTime.getDate() + 1)
 
         await request(app.getHttpServer())
           .post(`/session/${id}/update`)
           .set('Authorization', `Bearer ${token}`)
-          .send({ name: newName })
+          .send({ name: newName, startTime: newStartTime })
           .expect(201)
 
         const { body } = await request(app.getHttpServer())
@@ -53,18 +57,20 @@ describe('SessionController (e2e)', () => {
           .expect(200)
 
         expect(body.name).toBe(newName)
+        expect(body.startTime).toBe(newStartTime.toJSON())
       })
     })
 
-    describe('with a valid startTime', () => {
-      it('should update a session startTime', async () => {
+    describe('with an invalid startTime', () => {
+      it('should not update a session startTime', async () => {
         const newStartTime = new Date()
+        newStartTime.setDate(newStartTime.getDate() - 1)
 
         await request(app.getHttpServer())
           .post(`/session/${id}/update`)
           .set('Authorization', `Bearer ${token}`)
           .send({ startTime: newStartTime })
-          .expect(201)
+          .expect(400)
 
         const { body } = await request(app.getHttpServer())
           .get(`/session/${id}`)
@@ -72,7 +78,7 @@ describe('SessionController (e2e)', () => {
           .send()
           .expect(200)
 
-        expect(body.startTime).toBe(newStartTime.toJSON())
+        expect(body.startTime).toBe(startTime)
       })
     })
 
@@ -99,7 +105,7 @@ describe('SessionController (e2e)', () => {
           .send()
           .expect(200)
 
-        expect(body.startTime).toBe(startTime!.toJSON())
+        expect(body.startTime).toBe(startTime)
       })
     })
   })

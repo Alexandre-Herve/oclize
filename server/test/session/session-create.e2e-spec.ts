@@ -2,9 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { INestApplication } from '@nestjs/common'
 import { AppModule } from './../../src/app.module'
 import { ValidationPipe } from '@nestjs/common'
-import * as request from 'supertest'
 import { CreateSessionDto } from '../../src/session/application/api/dtos/create-session.dto'
 import { authenticate } from '../helpers/auth'
+import { createSession } from './helpers/create'
+import * as request from 'supertest'
 
 describe('SessionController (e2e)', () => {
   let app: INestApplication
@@ -33,21 +34,38 @@ describe('SessionController (e2e)', () => {
       describe('whith a valid dto', () => {
         it('should succeed and return a session', async () => {
           const startTime = new Date()
+          startTime.setDate(startTime.getDate() + 1)
+
           const name = 'oclize session'
           const createSessionDto: CreateSessionDto = {
             name,
             startTime,
           }
-          const { body } = await request(app.getHttpServer())
+
+          const res = await createSession(app, token!, createSessionDto)
+
+          expect(res.name).toBe(name)
+          expect(res.startTime).toBe(startTime.toJSON())
+          expect(res.invitees.length).toBe(0)
+          expect(res.id).toBeDefined()
+        })
+      })
+      describe('whith a invalid dto', () => {
+        it('should succeed and return a session', async () => {
+          const startTime = new Date()
+          startTime.setDate(startTime.getDate() - 1)
+
+          const name = 'oclize session'
+          const createSessionDto: CreateSessionDto = {
+            name,
+            startTime,
+          }
+
+          await request(app.getHttpServer())
             .post('/session/create')
             .set('Authorization', `Bearer ${token}`)
             .send(createSessionDto)
-            .expect(201)
-
-          expect(body.name).toBe(name)
-          expect(body.startTime).toBe(startTime.toJSON())
-          expect(body.invitees.length).toBe(0)
-          expect(body.id).toBeDefined()
+            .expect(400)
         })
       })
     })

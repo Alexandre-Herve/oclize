@@ -13,7 +13,10 @@ export const createSession = async (
   token: string,
   options: CreateSessionOptions = {},
 ) => {
-  const startTime = options.startTime ?? new Date()
+  const defaultStartTime = new Date()
+  defaultStartTime.setDate(defaultStartTime.getDate() + 1)
+
+  const startTime = options.startTime ?? defaultStartTime
   const name = options.name ?? `session-name=${uuid()}`
 
   const createSessionDto: CreateSessionDto = {
@@ -27,5 +30,10 @@ export const createSession = async (
     .send(createSessionDto)
     .expect(201)
 
-  return { id: body.id, name, startTime }
+  return {
+    id: body.id,
+    invitees: body.invitees,
+    name: body.name,
+    startTime: body.startTime,
+  }
 }

@@ -50,7 +50,7 @@ describe('SessionController (e2e)', () => {
       expect(body.id).toBe(id)
       expect(body.invitees.length).toEqual(0)
       expect(body.name).toBe(name)
-      expect(body.startTime).toBe(startTime!.toJSON())
+      expect(body.startTime).toBe(startTime)
     })
 
     describe('with other user token', () => {

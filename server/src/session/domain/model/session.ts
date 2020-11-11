@@ -30,6 +30,11 @@ export class SessionProps extends EntityProps {
   readonly startTime!: Date
 }
 
+const isPast = (date: Date): boolean => {
+  const now = new Date()
+  return date <= now
+}
+
 export type SessionUpdate = Partial<Pick<SessionProps, 'startTime' | 'name'>>
 
 export class Session extends AggregateRoot<SessionProps> {
@@ -37,6 +42,9 @@ export class Session extends AggregateRoot<SessionProps> {
     props: SessionProps,
   ): Promise<Either<ValidationError[], Session>> {
     const sessionProps = SessionProps.create<SessionProps>(props)
+    if (isPast(sessionProps.startTime)) {
+      return left([])
+    }
     const errors = await validate(sessionProps)
     if (errors.length > 0) {
       return left(errors)
@@ -50,6 +58,12 @@ export class Session extends AggregateRoot<SessionProps> {
   }
 
   public async update(sessionUpdate: SessionUpdate): Promise<boolean> {
+    if (sessionUpdate.startTime) {
+      const sessionStartTime = this.props.startTime
+      if (isPast(sessionStartTime) || isPast(sessionUpdate.startTime)) {
+        return false
+      }
+    }
     const newProps = { ...this.props, ...sessionUpdate }
     const sessionProps = SessionProps.create<SessionProps>(newProps)
     const errors = await validate(sessionProps)
