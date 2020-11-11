@@ -3,7 +3,8 @@ import {
   SessionRepository,
   Update,
 } from '../../domain/ports/session-repository'
-import { Session, SessionProps } from '../../domain/model/session'
+import { Session } from '../../domain/model/session'
+import { SessionProps } from '../../domain/model/session.props'
 import { Db } from 'mongodb'
 import { MONGODB_CONNECTION } from '../../../shared/infrastructure/constants'
 import { Option, fromEither, none } from 'fp-ts/lib/Option'

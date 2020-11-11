@@ -1,4 +1,5 @@
-import { Session, SessionProps } from '../model/session'
+import { Session } from '../model/session'
+import { SessionProps } from '../model/session.props'
 import { Option } from 'fp-ts/lib/Option'
 
 export type Update<T> = Partial<Exclude<T, 'id'>>

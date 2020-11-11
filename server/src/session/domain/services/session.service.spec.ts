@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { SessionService } from './session.service'
-import { Session, SessionProps } from '../model/session'
+import { Session } from '../model/session'
+import { SessionProps } from '../model/session.props'
 import { Option, fromEither, none } from 'fp-ts/lib/Option'
 import { SESSION_REPOSITORY } from '../ports/constants'
 import { SessionRepository, Update } from '../ports/session-repository'

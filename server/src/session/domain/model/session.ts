@@ -1,43 +1,14 @@
 import { left, right, Either } from 'fp-ts/lib/Either'
-import {
-  IsDate,
-  IsNotEmpty,
-  IsString,
-  ValidateNested,
-  ValidationError,
-  validate,
-} from 'class-validator'
+import { ValidationError, validate } from 'class-validator'
 import { AggregateRoot } from '../../../shared/model/aggregate-root'
-import { EntityProps } from '../../../shared/model/entity-props'
-import { Invitee } from './invitee'
-
-export class SessionProps extends EntityProps {
-  @IsNotEmpty()
-  @IsString()
-  readonly createdBy!: string
-
-  @IsDate()
-  readonly createdAt!: Date
-
-  @IsNotEmpty()
-  @IsString()
-  readonly name!: string
-
-  @ValidateNested()
-  readonly invitees!: Invitee[]
-
-  @IsDate()
-  readonly startTime!: Date
-}
-
-const isPast = (date: Date): boolean => {
-  const now = new Date()
-  return date <= now
-}
-
-export type SessionUpdate = Partial<Pick<SessionProps, 'startTime' | 'name'>>
+import { isPast } from '../helpers/is-past'
+import { SessionProps } from './session.props'
+import { SessionUpdate } from './session.update'
 
 export class Session extends AggregateRoot<SessionProps> {
+  private constructor(props: SessionProps) {
+    super(props)
+  }
   public static async create(
     props: SessionProps,
   ): Promise<Either<ValidationError[], Session>> {
