@@ -4,7 +4,7 @@ import { Injectable, Inject } from '@nestjs/common'
 import { SessionRepository } from '../ports/session-repository'
 import { IdService } from '../ports/id.service'
 import { Session, SessionProps, SessionUpdate } from '../model/session'
-import { EVENT_REPOSITORY, ID_SERVICE } from '../ports/constants'
+import { SESSION_REPOSITORY, ID_SERVICE } from '../ports/constants'
 import { Option, isNone, none, some } from 'fp-ts/lib/Option'
 import { Either, left, right } from 'fp-ts/lib/Either'
 
@@ -13,7 +13,7 @@ type CreateSession = Omit<SessionProps, 'invitees' | 'id'>
 @Injectable()
 export class SessionService {
   constructor(
-    @Inject(EVENT_REPOSITORY) private sessionRepository: SessionRepository,
+    @Inject(SESSION_REPOSITORY) private sessionRepository: SessionRepository,
     @Inject(ID_SERVICE) private idService: IdService,
   ) {}
 
@@ -67,8 +67,7 @@ export class SessionService {
       return left('invalid request')
     }
 
-    const updateKeys = keys(sessionUpdate)
-    await this.sessionRepository.update(session.props, updateKeys)
+    await this.sessionRepository.update(session.props.id, sessionUpdate)
     return right(session)
   }
 }

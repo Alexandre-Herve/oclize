@@ -1,6 +1,8 @@
-import { pick } from 'ramda'
 import { Injectable, Inject } from '@nestjs/common'
-import { SessionRepository } from '../../domain/ports/session-repository'
+import {
+  SessionRepository,
+  Update,
+} from '../../domain/ports/session-repository'
 import { Session, SessionProps } from '../../domain/model/session'
 import { Db } from 'mongodb'
 import { MONGODB_CONNECTION } from '../../../shared/infrastructure/constants'
@@ -33,13 +35,9 @@ export class MongoDbSessionRepository implements SessionRepository {
     return fromEither(session)
   }
 
-  public async update(
-    sessionProps: SessionProps,
-    fields: (keyof SessionProps)[],
-  ) {
-    const update = pick(fields, sessionProps)
+  public async update(sessionId: string, sessionUpdate: Update<SessionProps>) {
     await this.db
       .collection('sessions')
-      .updateOne({ _id: sessionProps.id }, { $set: update })
+      .updateOne({ _id: sessionId }, { $set: sessionUpdate })
   }
 }

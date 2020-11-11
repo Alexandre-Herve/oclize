@@ -17,7 +17,7 @@ export const createSession = async (
   defaultStartTime.setDate(defaultStartTime.getDate() + 1)
 
   const startTime = options.startTime ?? defaultStartTime
-  const name = options.name ?? `session-name=${uuid()}`
+  const name = options.name ?? `session-name-${uuid()}`
 
   const createSessionDto: CreateSessionDto = {
     name,

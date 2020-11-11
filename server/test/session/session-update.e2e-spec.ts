@@ -40,7 +40,7 @@ describe('SessionController (e2e)', () => {
 
     describe('with valid params', () => {
       it('should rename a session', async () => {
-        const newName = `newName-${uuid}`
+        const newName = `new-session-name-${uuid()}`
         const newStartTime = new Date()
         newStartTime.setDate(newStartTime.getDate() + 1)
 
