@@ -10,23 +10,24 @@ import { Option, isNone, none } from 'fp-ts/lib/Option'
 import { Either, mapLeft, left, right } from 'fp-ts/lib/Either'
 import { InvalidReason } from '../../../shared/model/errors'
 
-type CreateSession = Omit<SessionProps, 'invitees' | 'id'>
+export type CreateSession = Omit<SessionProps, 'invitees' | 'id'>
 
-type NotFound = {
+export type NotFound = {
   type: 'not_found'
 }
 
-type Forbidden = {
+export type Forbidden = {
   type: 'forbidden'
 }
 
-type Invalid = {
+export type Invalid = {
   type: 'invalid'
   reasons: InvalidReason[]
 }
 
-type UpdateError = NotFound | Forbidden | Invalid
-type CreateError = Invalid
+export type UpdateError = NotFound | Forbidden | Invalid
+export type CreateError = Invalid
+export type RemoveError = NotFound | Forbidden
 
 @Injectable()
 export class SessionService {
@@ -95,5 +96,24 @@ export class SessionService {
 
     await this.sessionRepository.update(session.props.id, sessionUpdate)
     return right(updateResult.right)
+  }
+
+  async remove(
+    sessionId: string,
+    requestAuthor: string,
+  ): Promise<Either<RemoveError, Session>> {
+    const sessionOption = await this.sessionRepository.getById(sessionId)
+    if (isNone(sessionOption)) {
+      return left({ type: 'not_found' })
+    }
+
+    const session = sessionOption.value
+
+    const requestedByAuthor = requestAuthor === session.props.createdBy
+    if (!requestedByAuthor) {
+      return left({ type: 'forbidden' })
+    }
+    await this.sessionRepository.remove(session.props.id)
+    return right(session)
   }
 }

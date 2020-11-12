@@ -2,7 +2,9 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
+  InternalServerErrorException,
   NotFoundException,
   Param,
   Post,
@@ -77,6 +79,24 @@ export class SessionController {
       throw new NotFoundException()
     } else {
       throw new BadRequestException()
+    }
+  }
+
+  @Delete(':sessionId')
+  async delete(
+    @Param() { sessionId }: { sessionId: string },
+    @Request() req: any,
+  ) {
+    const requestAuthor = req.user.id
+    const res = await this.sessionService.remove(sessionId, requestAuthor)
+    if (isRight(res)) {
+      return true
+    }
+    const reason = res.left
+    if (reason.type === 'not_found' || reason.type === 'forbidden') {
+      throw new NotFoundException()
+    } else {
+      throw new InternalServerErrorException()
     }
   }
 

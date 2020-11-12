@@ -12,6 +12,8 @@ import { Option, fromEither, none } from 'fp-ts/lib/Option'
 const isMongoObject = (x: unknown) =>
   typeof x === 'object' && x !== null && '_id' in x
 
+const SESSIONS = 'sessions'
+
 @Injectable()
 export class MongoDbSessionRepository implements SessionRepository {
   constructor(
@@ -22,11 +24,11 @@ export class MongoDbSessionRepository implements SessionRepository {
   public async create(sessionProps: SessionProps) {
     const { id, ...rest } = sessionProps
     const doc = { _id: id, ...rest }
-    await this.db.collection('sessions').insertOne(doc)
+    await this.db.collection(SESSIONS).insertOne(doc)
   }
 
   public async getById(sessionId: string): Promise<Option<Session>> {
-    const res = await this.db.collection('sessions').findOne({ _id: sessionId })
+    const res = await this.db.collection(SESSIONS).findOne({ _id: sessionId })
     if (!isMongoObject(res)) {
       return none
     }
@@ -38,7 +40,11 @@ export class MongoDbSessionRepository implements SessionRepository {
 
   public async update(sessionId: string, sessionUpdate: Update<SessionProps>) {
     await this.db
-      .collection('sessions')
+      .collection(SESSIONS)
       .updateOne({ _id: sessionId }, { $set: sessionUpdate })
+  }
+
+  public async remove(sessionId: string) {
+    await this.db.collection(SESSIONS).deleteOne({ _id: sessionId })
   }
 }

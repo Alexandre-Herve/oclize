@@ -69,8 +69,4 @@ export class Session extends AggregateRoot<SessionProps> {
     this.props = sessionProps
     return right(this)
   }
-
-  public async remove() {
-    throw new Error('not implemented')
-  }
 }
