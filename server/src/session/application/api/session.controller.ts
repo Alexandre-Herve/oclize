@@ -15,8 +15,8 @@ import { UpdateSessionDto } from './dtos/update-session.dto'
 // import { InviteToSessionDto } from './dtos/invite-to-session.dto'
 import { SessionService } from '../../domain/services/session.service'
 import { SessionViewService } from './views/session-view.service'
+import { isRight, isLeft } from 'fp-ts/lib/Either'
 import { isNone } from 'fp-ts/lib/Option'
-import { isRight } from 'fp-ts/lib/Either'
 
 @Controller('session')
 @UseGuards(JwtAuthGuard)
@@ -35,10 +35,10 @@ export class SessionController {
     const createdAt = new Date()
     const createSession = { ...createSessionDto, createdBy, createdAt }
     const sessionOption = await this.sessionService.create(createSession)
-    if (isNone(sessionOption)) {
+    if (isLeft(sessionOption)) {
       throw new BadRequestException()
     }
-    return this.sessionViewService.view(sessionOption.value)
+    return this.sessionViewService.view(sessionOption.right)
   }
 
   @Get(':sessionId')
@@ -73,7 +73,7 @@ export class SessionController {
       return true
     }
     const reason = res.left
-    if (reason === 'not found' || reason === 'unauthorized') {
+    if (reason.type === 'not_found' || reason.type === 'forbidden') {
       throw new NotFoundException()
     } else {
       throw new BadRequestException()

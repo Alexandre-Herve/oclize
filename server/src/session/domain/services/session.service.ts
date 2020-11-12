@@ -6,10 +6,27 @@ import { Session } from '../model/session'
 import { SessionProps } from '../model/session.props'
 import { SessionUpdate } from '../model/session.update'
 import { SESSION_REPOSITORY, ID_SERVICE } from '../ports/constants'
-import { Option, isNone, none, some } from 'fp-ts/lib/Option'
-import { Either, left, right } from 'fp-ts/lib/Either'
+import { Option, isNone, none } from 'fp-ts/lib/Option'
+import { Either, mapLeft, left, right } from 'fp-ts/lib/Either'
+import { InvalidReason } from '../../../shared/model/errors'
 
 type CreateSession = Omit<SessionProps, 'invitees' | 'id'>
+
+type NotFound = {
+  type: 'not_found'
+}
+
+type Forbidden = {
+  type: 'forbidden'
+}
+
+type Invalid = {
+  type: 'invalid'
+  reasons: InvalidReason[]
+}
+
+type UpdateError = NotFound | Forbidden | Invalid
+type CreateError = Invalid
 
 @Injectable()
 export class SessionService {
@@ -18,16 +35,21 @@ export class SessionService {
     @Inject(ID_SERVICE) private idService: IdService,
   ) {}
 
-  async create(createSession: CreateSession): Promise<Option<Session>> {
+  async create(
+    createSession: CreateSession,
+  ): Promise<Either<CreateError, Session>> {
     const id = this.idService.newId()
     const sessionProps = { ...createSession, id, invitees: [] }
     const sessionResult = await Session.create(sessionProps)
     if (isLeft(sessionResult)) {
-      return none
+      return mapLeft<InvalidReason[], CreateError>((reasons) => ({
+        type: 'invalid',
+        reasons,
+      }))(sessionResult)
     }
     const session = sessionResult.right
     await this.sessionRepository.create(session.props)
-    return some(session)
+    return right(session)
   }
 
   async getById(
@@ -50,25 +72,28 @@ export class SessionService {
     sessionId: string,
     requestAuthor: string,
     sessionUpdate: SessionUpdate,
-  ): Promise<Either<string, Session>> {
+  ): Promise<Either<UpdateError, Session>> {
     const sessionOption = await this.sessionRepository.getById(sessionId)
     if (isNone(sessionOption)) {
-      return left('not found')
+      return left({ type: 'not_found' })
     }
 
     const session = sessionOption.value
 
     const requestedByAuthor = requestAuthor === session.props.createdBy
     if (!requestedByAuthor) {
-      return left('unauthorized')
+      return left({ type: 'forbidden' })
     }
 
-    const updateValid = await session.update(sessionUpdate)
-    if (!updateValid) {
-      return left('invalid request')
+    const updateResult = await session.update(sessionUpdate)
+    if (isLeft(updateResult)) {
+      return mapLeft<InvalidReason[], UpdateError>((reasons) => ({
+        type: 'invalid',
+        reasons,
+      }))(updateResult)
     }
 
     await this.sessionRepository.update(session.props.id, sessionUpdate)
-    return right(session)
+    return right(updateResult.right)
   }
 }

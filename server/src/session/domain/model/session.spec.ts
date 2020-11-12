@@ -71,7 +71,7 @@ describe('Session', () => {
 
   describe('update', () => {
     describe('with valid parameters', () => {
-      it('should return true and have updatd the params', async () => {
+      it('should return true and have updated the params', async () => {
         const sessionResult = await Session.create(params)
         if (!isRight(sessionResult)) {
           throw new Error(`session creation failed with ${sessionResult.left}`)
@@ -84,7 +84,7 @@ describe('Session', () => {
           name: newName,
           startTime: newStartTime,
         })
-        expect(res).toBe(true)
+        expect(isRight(res)).toBe(true)
         expect(session.props.name).toBe(newName)
         expect(session.props.startTime).toBe(newStartTime)
       })
@@ -98,7 +98,7 @@ describe('Session', () => {
         const session = sessionResult.right
         const newName = ''
         const res = await session.update({ name: newName })
-        expect(res).toBe(false)
+        expect(isLeft(res)).toBe(true)
         expect(session.props.name).toBe(name)
       })
     })
@@ -112,7 +112,7 @@ describe('Session', () => {
         const newStartTime = new Date()
         newStartTime.setDate(newStartTime.getDate() - 1)
         const res = await session.update({ startTime: newStartTime })
-        expect(res).toBe(false)
+        expect(isLeft(res)).toBe(true)
         expect(session.props.startTime).toBe(startTime)
       })
     })
@@ -131,7 +131,7 @@ describe('Session', () => {
           newStartTime.setDate(newStartTime.getDate() + 3)
           const res = await session.update({ startTime: newStartTime })
 
-          expect(res).toBe(false)
+          expect(isLeft(res)).toBe(true)
           expect(session.props.startTime).toBe(startTime)
           done()
         }, 150)
