@@ -7,8 +7,8 @@ import { JwtConfigService } from './application/passport/jwt/jwt-config.service'
 import { MongoDbModule } from '../infrastructure/mongodb/mobgodb.module'
 import { passwordHashProvider } from './config/password-hash.provider'
 import { usersRepositoryProvider } from './config/user-repository.provider'
-import { AuthenticationService } from './domain/services/authentication.service'
-import { RegistrationService } from './domain/services/registration.service'
+import { AuthenticationUseCase } from './domain/use-cases/authentication.usecase'
+import { RegistrationUseCase } from './domain/use-cases/registration.usecase'
 import { JwtAccessTokenService } from './application/passport/jwt/jwt-access-token.service'
 import { AuthenticationController } from './application/api/authentication.controller'
 
@@ -20,11 +20,11 @@ import { AuthenticationController } from './application/api/authentication.contr
     JwtModule.registerAsync({ useClass: JwtConfigService }),
   ],
   providers: [
+    AuthenticationUseCase,
     JwtAccessTokenService,
-    AuthenticationService,
     JwtStrategy,
     LocalStrategy,
-    RegistrationService,
+    RegistrationUseCase,
     passwordHashProvider,
     usersRepositoryProvider,
   ],

@@ -1,13 +1,13 @@
 import { Strategy } from 'passport-local'
 import { PassportStrategy } from '@nestjs/passport'
 import { Injectable, UnauthorizedException } from '@nestjs/common'
-import { AuthenticationService } from '../../../domain/services/authentication.service'
+import { AuthenticationUseCase } from '../../../domain/use-cases/authentication.usecase'
 import { fold } from 'fp-ts/lib/Option'
 import { User } from '../../../domain/model/user'
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
-  constructor(private authService: AuthenticationService) {
+  constructor(private authUseCase: AuthenticationUseCase) {
     super({
       usernameField: 'email',
     })
@@ -25,7 +25,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   private validateUserOption = fold(this.onNoUser, this.onSomeUser)
 
   async validate(email: string, password: string): Promise<{ email: string }> {
-    const user = await this.authService.getUserByCredentials(email, password)
+    const user = await this.authUseCase.getUserByCredentials(email, password)
     return this.validateUserOption(user)
   }
 }

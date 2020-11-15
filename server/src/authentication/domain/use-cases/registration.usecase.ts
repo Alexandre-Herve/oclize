@@ -6,7 +6,7 @@ import { Option, isSome, none, some } from 'fp-ts/lib/Option'
 import { PASSWORD_HASH, USER_REPOSITORY } from '../ports/constants'
 
 @Injectable()
-export class RegistrationService {
+export class RegistrationUseCase {
   constructor(
     @Inject(USER_REPOSITORY) private usersRepository: UserRepository,
     @Inject(PASSWORD_HASH) private passwordHashService: PasswordHash,

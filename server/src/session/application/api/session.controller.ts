@@ -15,7 +15,10 @@ import { JwtAuthGuard } from '../../../authentication/application/passport/jwt/j
 import { CreateSessionDto } from './dtos/create-session.dto'
 import { UpdateSessionDto } from './dtos/update-session.dto'
 // import { InviteToSessionDto } from './dtos/invite-to-session.dto'
-import { SessionService } from '../../domain/services/session.service'
+import { GetSessionUseCase } from '../../domain/use-cases/get-session.usecase'
+import { CreateSessionUseCase } from '../../domain/use-cases/create-session.usecase'
+import { RemoveSessionUseCase } from '../../domain/use-cases/remove-session.usecase'
+import { UpdateSessionUseCase } from '../../domain/use-cases/update-session.usecase'
 import { SessionViewService } from './views/session-view.service'
 import { isRight, isLeft } from 'fp-ts/lib/Either'
 import { isNone } from 'fp-ts/lib/Option'
@@ -24,7 +27,10 @@ import { isNone } from 'fp-ts/lib/Option'
 @UseGuards(JwtAuthGuard)
 export class SessionController {
   constructor(
-    private sessionService: SessionService,
+    private updateSessionUseCase: UpdateSessionUseCase,
+    private createSessionUseCase: CreateSessionUseCase,
+    private removeSessionUseCase: RemoveSessionUseCase,
+    private getSessionUseCase: GetSessionUseCase,
     private sessionViewService: SessionViewService,
   ) {}
 
@@ -36,7 +42,7 @@ export class SessionController {
     const createdBy = req.user.id
     const createdAt = new Date()
     const createSession = { ...createSessionDto, createdBy, createdAt }
-    const sessionOption = await this.sessionService.create(createSession)
+    const sessionOption = await this.createSessionUseCase.create(createSession)
     if (isLeft(sessionOption)) {
       throw new BadRequestException()
     }
@@ -49,7 +55,7 @@ export class SessionController {
     @Request() req: any,
   ) {
     const requestAuthor = req.user.id
-    const sessionOption = await this.sessionService.getById(
+    const sessionOption = await this.getSessionUseCase.getById(
       sessionId,
       requestAuthor,
     )
@@ -66,7 +72,7 @@ export class SessionController {
     @Request() req: any,
   ) {
     const requestAuthor = req.user.id
-    const res = await this.sessionService.update(
+    const res = await this.updateSessionUseCase.update(
       sessionId,
       requestAuthor,
       updateSessionDto,
@@ -88,7 +94,7 @@ export class SessionController {
     @Request() req: any,
   ) {
     const requestAuthor = req.user.id
-    const res = await this.sessionService.remove(sessionId, requestAuthor)
+    const res = await this.removeSessionUseCase.remove(sessionId, requestAuthor)
     if (isRight(res)) {
       return true
     }

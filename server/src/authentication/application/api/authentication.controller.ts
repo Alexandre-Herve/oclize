@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common'
 import { LocalAuthGuard } from '../passport/local/local-auth.guard'
 import { JwtAuthGuard } from '../passport/jwt/jwt-auth.guard'
-import { RegistrationService } from '../../domain/services/registration.service'
+import { RegistrationUseCase } from '../../domain/use-cases/registration.usecase'
 import { CreateUserDto } from '../../domain/ports/create-user.dto'
 import { JwtAccessTokenService } from '../passport/jwt/jwt-access-token.service'
 import { JwtReqUser } from '../passport/jwt/jwt-req-user'
@@ -18,13 +18,13 @@ import { isNone } from 'fp-ts/lib/Option'
 @Controller('auth')
 export class AuthenticationController {
   constructor(
-    private registrationService: RegistrationService,
+    private registrationUseCase: RegistrationUseCase,
     private jwtAccessTokenService: JwtAccessTokenService,
   ) {}
 
   @Post('register')
   async register(@Body() createUserDto: CreateUserDto) {
-    const result = await this.registrationService.registerUser(createUserDto)
+    const result = await this.registrationUseCase.registerUser(createUserDto)
     if (isNone(result)) {
       const message = 'An account is already registered with this email'
       throw new ForbiddenException(message)
