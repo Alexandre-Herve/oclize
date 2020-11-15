@@ -7,7 +7,7 @@ export interface AuthOptions {
   password?: string
 }
 
-export const authenticate = async (
+export const register = async (
   app: INestApplication,
   options: AuthOptions = {},
 ) => {
@@ -20,12 +20,38 @@ export const authenticate = async (
     .expect(201)
 
   const userId = registerRes.body
+  return { email, password, userId }
+}
 
+export const login = async (
+  app: INestApplication,
+  { email, password }: { email: string; password: string },
+) => {
   const authenticationRes = await request(app.getHttpServer())
     .post('/auth/login')
     .send({ email, password })
     .expect(201)
 
   const token = authenticationRes.body.access_token as string
+  return { token }
+}
+
+export const authenticate = async (
+  app: INestApplication,
+  options: AuthOptions = {},
+) => {
+  const { email, password, userId } = await register(app, options)
+  const { token } = await login(app, { email, password })
   return { token, email, password, userId }
+}
+
+export const getUniqueToken = async (app: INestApplication, email: string) => {
+  const res = await request(app.getHttpServer())
+    .post('/auth/requestUniqueToken')
+    .send({ email })
+    .expect(201)
+
+  // TODO: intercept email
+
+  return res.body.unique_token
 }

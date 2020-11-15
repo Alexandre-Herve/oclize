@@ -8,7 +8,7 @@ import { PASSWORD_HASH, USER_REPOSITORY } from '../ports/constants'
 @Injectable()
 export class AuthenticationUseCase {
   constructor(
-    @Inject(USER_REPOSITORY) private usersRepository: UserRepository,
+    @Inject(USER_REPOSITORY) private userRepository: UserRepository,
     @Inject(PASSWORD_HASH) private passwordHashService: PasswordHash,
   ) {}
 
@@ -16,7 +16,7 @@ export class AuthenticationUseCase {
     email: string,
     pass: string,
   ): Promise<Option<User>> {
-    const userOption = await this.usersRepository.getByEmail(email)
+    const userOption = await this.userRepository.getByEmail(email)
     if (isNone(userOption)) {
       return none
     }

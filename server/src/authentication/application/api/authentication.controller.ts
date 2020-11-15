@@ -14,12 +14,16 @@ import { CreateUserDto } from '../../domain/ports/create-user.dto'
 import { JwtAccessTokenService } from '../passport/jwt/jwt-access-token.service'
 import { JwtReqUser } from '../passport/jwt/jwt-req-user'
 import { isNone } from 'fp-ts/lib/Option'
+import { UniqueTokenAuthGuard } from '../passport/unique-token/unique-token-auth.guard'
+import { RequestUniqueTokenUseCase } from '../../domain/use-cases/request-unique-token.usecase'
+import { RequestUniqueTokenDto } from './dtos/request-unique-token.dto'
 
 @Controller('auth')
 export class AuthenticationController {
   constructor(
     private registrationUseCase: RegistrationUseCase,
     private jwtAccessTokenService: JwtAccessTokenService,
+    private requestUniqueTokenUseCase: RequestUniqueTokenUseCase,
   ) {}
 
   @Post('register')
@@ -42,5 +46,17 @@ export class AuthenticationController {
   @UseGuards(JwtAuthGuard)
   getProfile(@Request() req: any): JwtReqUser {
     return req.user
+  }
+
+  @Post('request-unique-token')
+  requestUniqueToken(@Body() { email }: RequestUniqueTokenDto) {
+    this.requestUniqueTokenUseCase.requestUniqueToken(email)
+    return
+  }
+
+  @Post('claim-unique-token')
+  @UseGuards(UniqueTokenAuthGuard)
+  tokenlogin(@Request() req: any) {
+    return this.jwtAccessTokenService.getUserAccessToken(req.user)
   }
 }

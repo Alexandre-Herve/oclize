@@ -12,3 +12,5 @@ export type Invalid = {
   type: 'invalid'
   reasons: InvalidReason[]
 }
+
+export const notFound: NotFound = { type: 'not_found' }
